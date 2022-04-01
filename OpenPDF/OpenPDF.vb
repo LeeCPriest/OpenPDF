@@ -38,8 +38,8 @@ Public Class OpenPDF
 
             'define the process info used to open the PDF file
             Dim ProcStartInfo As New ProcessStartInfo()
-            ProcStartInfo.FileName = "acrord32.exe"
-            ProcStartInfo.Arguments = PDFPath
+            ProcStartInfo.FileName = "powershell.exe"
+            ProcStartInfo.Arguments = "Invoke-Item" & " " & PDFPath
 
             Try
                 Process.Start(ProcStartInfo)
