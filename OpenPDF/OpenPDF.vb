@@ -1,4 +1,5 @@
 ﻿Imports EdmLib
+Imports System.IO
 
 Public Class OpenPDF
     Implements IEdmAddIn5
@@ -24,9 +25,14 @@ Public Class OpenPDF
         If UCase(Left(poCmd.mbsComment, 8)) = "OPENPDF:" Then
             Dim eCmdData As EdmCmdData = ppoData(0) 'get the first entry of the cmd data array (should only be one entry, since triggered by button on datacard)
 
+            Dim InputText As String = poCmd.mbsComment 'get the info in the 'Name of add-in' field of the button config on the datacard
+
+            Dim CmdArgument As String = Strings.Right(InputText, 1) 'read the last character, which determines the PDF execution method
+            InputText = Strings.Left(InputText, Len(InputText) - 1) 'remove last character
+
             'Get the name of the variable to update.
             Dim VarName As String
-            VarName = Right(poCmd.mbsComment, Len(poCmd.mbsComment) - 8)
+            VarName = Right(InputText, Len(InputText) - 8)
 
             Dim PDFPath As String = ""
 
@@ -34,18 +40,49 @@ Public Class OpenPDF
             Dim eVault As EdmVault5 = poCmd.mpoVault 'get the vault object
             Dim eFile As IEdmFile5 = eVault.GetObject(EdmObjectType.EdmObject_File, eCmdData.mlObjectID1) 'get the file object
             Dim eFileCard As IEdmEnumeratorVariable8 = eFile.GetEnumeratorVariable() 'get the datacard object
+
+            'get the configuration information from the file
+            Dim eFileConfigs As EdmStrLst5 = eFile.GetConfigurations()
+            Dim ConfigList As String = ""
+            Dim eConfigName As String
+            Dim pos As IEdmPos5 = eFileConfigs.GetHeadPosition
+            While Not pos.IsNull
+                eConfigName = eFileConfigs.GetNext(pos)
+                ConfigList &= eConfigName & vbCr
+            End While
+
+            'need to know which configuration to read from, and replace "@" with config name
+
             eFileCard.GetVarFromDb(VarName, "@", PDFPath) 'read the PDF path from the specified variable
+            eFileCard.CloseFile(False)
 
             'define the process info used to open the PDF file
             Dim ProcStartInfo As New ProcessStartInfo()
-            ProcStartInfo.FileName = "powershell.exe"
-            ProcStartInfo.Arguments = "Invoke-Item" & " " & PDFPath
 
-            Try
-                Process.Start(ProcStartInfo)
-            Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Exclamation, "OpenPDF Error")
-            End Try
+            If File.Exists(PDFPath) = True Then
+
+                If CmdArgument = 1 Then
+                    ProcStartInfo.FileName = "powershell.exe"
+                    ProcStartInfo.Arguments = "Invoke-Item '" & PDFPath & "'"
+
+                    Try
+                        Process.Start(ProcStartInfo)
+                    Catch ex As Exception
+                        MsgBox(ex.Message, MsgBoxStyle.Exclamation, "OpenPDF Error")
+                    End Try
+                ElseIf CmdArgument = 2 Then
+                    Try
+                        Process.Start(PDFPath)
+                    Catch ex As Exception
+                        MsgBox(ex.Message, MsgBoxStyle.Exclamation, "OpenPDF Error")
+                    End Try
+                End If
+
+            Else
+                MsgBox(PDFPath & " does not exist. Unable to open.", MsgBoxStyle.Exclamation, "OpenPDF Error")
+            End If
+
+
         End If
     End Sub
 
