@@ -1,5 +1,4 @@
 ﻿Imports EdmLib
-Imports System.IO
 
 Public Class OpenPDF
     Implements IEdmAddIn5
@@ -9,7 +8,7 @@ Public Class OpenPDF
         poInfo.mbsCompany = "Written by Lee Priest - leeclarkepriest@gmail.com"
 
         'Specify information to display in the add-in's Properties dialog box
-        poInfo.mbsDescription = "Opens PDF files using PDM datacard button." & vbCrLf & "Use Name add-in name field to specify variable to read." & vbCrLf & "Syntax 'OpenPDF:[Variable_PDF_Path]'"
+        poInfo.mbsDescription = "Opens PDF files using PDM datacard button." & vbCrLf & "Use 'Name of add-in' field to specify variable to read." & vbCrLf & "Syntax 'OpenPDF:[Variable_PDF_Path]'"
         poInfo.mlAddInVersion = 1
         poInfo.mlRequiredVersionMajor = 8
         poInfo.mlRequiredVersionMinor = 0
@@ -20,21 +19,10 @@ Public Class OpenPDF
     End Sub
 
     Public Sub OnCmd(ByRef poCmd As EdmCmd, ByRef ppoData As Array) Implements IEdmAddIn5.OnCmd
-        'To trigger the field called 'Name of add-in' associated with the PDM datacard button must be of the following format: OpenPDF:[Variable_PDF_Path]
+        'To trigger, the field called 'Name of add-in' associated with the PDM datacard button must be of the following format: OpenPDF:[Variable_PDF_Path]
 
         If UCase(Left(poCmd.mbsComment, 8)) = "OPENPDF:" Then
             Dim eCmdData As EdmCmdData = ppoData(0) 'get the first entry of the cmd data array (should only be one entry, since triggered by button on datacard)
-
-            Dim InputText As String = poCmd.mbsComment 'get the info in the 'Name of add-in' field of the button config on the datacard
-
-            Dim CmdArgument As String = Strings.Right(InputText, 1) 'read the last character, which determines the PDF execution method
-            InputText = Strings.Left(InputText, Len(InputText) - 1) 'remove last character
-
-            'Get the name of the variable to update.
-            Dim VarName As String
-            VarName = Right(InputText, Len(InputText) - 8)
-
-            Dim PDFPath As String = ""
 
             'get the PDF path from the datacard variable specified
             Dim eVault As EdmVault5 = poCmd.mpoVault 'get the vault object
@@ -43,47 +31,56 @@ Public Class OpenPDF
 
             'get the configuration information from the file
             Dim eFileConfigs As EdmStrLst5 = eFile.GetConfigurations()
-            Dim ConfigList As String = ""
             Dim eConfigName As String
+            Dim ConfigList As New ArrayList
+
             Dim pos As IEdmPos5 = eFileConfigs.GetHeadPosition
             While Not pos.IsNull
                 eConfigName = eFileConfigs.GetNext(pos)
-                ConfigList &= eConfigName & vbCr
+                ConfigList.Add(eConfigName)
             End While
 
-            'need to know which configuration to read from, and replace "@" with config name
+            Dim SelectedConfig As String = ""
 
-            eFileCard.GetVarFromDb(VarName, "@", PDFPath) 'read the PDF path from the specified variable
-            eFileCard.CloseFile(False)
+            If ConfigList.Count = 2 Then 'if there are 2 configurations (@ and only one model config), select the model config 
+                SelectedConfig = ConfigList.Item(1)
+            ElseIf ConfigList.Count > 2 Then 'if there are more than 2 configurations, open the form to select, otherwise default to the 
+                Dim ConfigSelectForm As New ConfigSelect
+                ConfigSelectForm.ConfigList = ConfigList
+                ConfigSelectForm.ShowDialog()
+                SelectedConfig = ConfigSelectForm.ConfigListBox.Items(ConfigSelectForm.ConfigListBox.SelectedIndex)
+                ConfigSelectForm.Dispose()
+            End If
 
-            'define the process info used to open the PDF file
-            Dim ProcStartInfo As New ProcessStartInfo()
+            Dim PDFPath As String = ""
 
-            If File.Exists(PDFPath) = True Then
+            'Get the name of the variable from which to read the PDF path
+            Dim VarName As String
+            VarName = Right(poCmd.mbsComment, Len(poCmd.mbsComment) - 8)
 
-                If CmdArgument = 1 Then
-                    ProcStartInfo.FileName = "powershell.exe"
-                    ProcStartInfo.Arguments = "Invoke-Item '" & PDFPath & "'"
+            Try
+                eFileCard.GetVar(VarName, SelectedConfig, PDFPath) 'get the PDF path from the specified variable, for the selected config
+            Catch ex As Exception
+                MsgBox(ex.Message, MsgBoxStyle.Exclamation, "OpenPDF Error")
+            End Try
 
-                    Try
-                        Process.Start(ProcStartInfo)
-                    Catch ex As Exception
-                        MsgBox(ex.Message, MsgBoxStyle.Exclamation, "OpenPDF Error")
-                    End Try
-                ElseIf CmdArgument = 2 Then
-                    Try
-                        Process.Start(PDFPath)
-                    Catch ex As Exception
-                        MsgBox(ex.Message, MsgBoxStyle.Exclamation, "OpenPDF Error")
-                    End Try
-                End If
+            eFileCard.CloseFile(False) 'close the datacard object
+
+            If IO.File.Exists(PDFPath) = True Then 'check if the PDF exists
+
+                Try
+                    Process.Start(PDFPath) 'open the selected PDF
+                Catch ex As Exception
+                    MsgBox(ex.Message, MsgBoxStyle.Exclamation, "OpenPDF Error")
+                End Try
 
             Else
-                MsgBox(PDFPath & " does not exist. Unable to open.", MsgBoxStyle.Exclamation, "OpenPDF Error")
+                MsgBox("The file path '" & PDFPath & "' does not exist. Unable to open.", MsgBoxStyle.Exclamation, "OpenPDF Error")
             End If
 
 
         End If
+
     End Sub
 
 End Class
