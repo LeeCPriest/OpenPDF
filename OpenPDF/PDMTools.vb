@@ -2,11 +2,11 @@
 Imports SldWorks
 Imports SwConst
 Imports System.Reflection
-Public Class OpenPDF
+Public Class PDMTools
     Implements IEdmAddIn5
 
     Public Sub GetAddInInfo(ByRef poInfo As EdmAddInInfo, poVault As IEdmVault5, poCmdMgr As IEdmCmdMgr5) Implements IEdmAddIn5.GetAddInInfo
-        poInfo.mbsAddInName = "TruSteel_Tools"
+        poInfo.mbsAddInName = "TruSteel_PDMTools"
         poInfo.mbsCompany = "Written by Lee Priest - leeclarkepriest@gmail.com"
 
         'Specify information to display in the add-in's Properties dialog box

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{297B7BC3-35EC-4B49-BC91-5DBD63F53A49}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>OpenPDF</RootNamespace>
-    <AssemblyName>OpenPDF</AssemblyName>
+    <RootNamespace>PDMTools</RootNamespace>
+    <AssemblyName>TruSteel_PDMTools</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
@@ -19,7 +19,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>OpenPDF.xml</DocumentationFile>
+    <DocumentationFile>TruSteel_PDMTools.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <RegisterForComInterop>false</RegisterForComInterop>
   </PropertyGroup>
@@ -29,7 +29,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>OpenPDF.xml</DocumentationFile>
+    <DocumentationFile>TruSteel_PDMTools.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <RegisterForComInterop>false</RegisterForComInterop>
   </PropertyGroup>
@@ -87,11 +87,12 @@
     <Compile Include="ConfigSelect.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OpenPDF.vb" />
+    <Compile Include="PDMTools.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
