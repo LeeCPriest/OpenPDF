@@ -8,10 +8,10 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("OpenPDF")>
+<Assembly: AssemblyTitle("TruSteel PDMTools")>
 <Assembly: AssemblyDescription("Written by Lee Priest - leeclarkepriest@gmail.com")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("OpenPDF")>
+<Assembly: AssemblyProduct("TruSteel PDMTools")>
 <Assembly: AssemblyCopyright("Copyright ©  2022")>
 <Assembly: AssemblyTrademark("Written by Lee Priest - leeclarkepriest@gmail.com")>
 

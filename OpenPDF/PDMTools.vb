@@ -11,8 +11,8 @@ Public Class PDMTools
 
         'Specify information to display in the add-in's Properties dialog box
         poInfo.mbsDescription = "Use 'Name of add-in' field in datacard button properties as follows:
-                                1. To open PDF files - 'OpenPDF:[Variable_PDF_Path]'
-                                2. To add new configuration to assy/part files - 'AddCfgPN'"
+        1. To open PDF files - 'OpenPDF:[Variable_PDF_Path]'
+        2. To add new configuration to assy/part files - 'AddCfgPN'"
         poInfo.mlAddInVersion = 1.1
         poInfo.mlRequiredVersionMajor = 8
         poInfo.mlRequiredVersionMinor = 0
@@ -77,7 +77,7 @@ Public Class PDMTools
         Try
             eFileCard.GetVar(VarName, SelectedConfig, PDFPath) 'get the PDF path from the specified variable, for the selected config
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+            MsgBox(ex.Message, MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
         End Try
 
         eFileCard.CloseFile(False) 'close the datacard object
@@ -87,11 +87,11 @@ Public Class PDMTools
             Try
                 Process.Start(PDFPath) 'open the selected PDF
             Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+                MsgBox(ex.Message, MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
             End Try
 
         Else
-            MsgBox("The file path '" & PDFPath & "' does not exist. Unable to open.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+            MsgBox("The file path '" & PDFPath & "' does not exist. Unable to open.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
         End If
 
     End Sub
@@ -123,7 +123,7 @@ Public Class PDMTools
                     End Try
 
                     If SWApp Is Nothing Then
-                        MsgBox("SolidWorks must be opened to add a new configuration.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+                        MsgBox("SolidWorks must be opened to add a new configuration.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
 
                         '*** This attempt to open SolidWorks fails because the add-ins don't load, for some reason ***
                         'If MsgBox("SolidWorks must be opened to add a new configuration. Continue?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, My.Application.Info.AssemblyName) = vbYes Then
@@ -139,7 +139,7 @@ Public Class PDMTools
                         Dim SWFile As ModelDoc2 = SWApp.ActiveDoc
 
                         If SWFile Is Nothing Then
-                            MsgBox("The file " & swFileName & " must be opened to add a new configuration.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+                            MsgBox("The file " & swFileName & " must be opened to add a new configuration.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
 
                             '*** This attempt to open the file fails because the PDM add-in isn't updatating, for some reason ***
                             'If MsgBox("The file " & swFileName & " must be opened to add a new configuration. Continue?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, My.Application.Info.AssemblyName) = vbYes Then
@@ -174,7 +174,7 @@ Public Class PDMTools
                                     Dim cfgExists As Boolean = True
                                     Dim newCfgName As String = ""
                                     Do While cfgExists = True
-                                        newCfgName = InputBox("Please provide the name of the new configuration to add", MethodInfo.GetCurrentMethod.ToString, " ")
+                                        newCfgName = InputBox("Please provide the name of the new configuration to add", MethodInfo.GetCurrentMethod.Name, " ")
 
                                         If newCfgName = "" Then
                                             Exit Do
@@ -183,12 +183,12 @@ Public Class PDMTools
 
                                             For i = 0 To ConfigList.Count - 1
                                                 If ConfigList.Item(i) = newCfgName Then
-                                                    MsgBox("A configuration named " & newCfgName & " already exists. Please enter a new name.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+                                                    MsgBox("A configuration named " & newCfgName & " already exists. Please enter a new name.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
                                                     cfgExists = True
                                                 End If
                                             Next
                                         Else
-                                            MsgBox("A blank configuration name is not valid. Please enter a new name.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+                                            MsgBox("A blank configuration name is not valid. Please enter a new name.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
                                         End If
                                     Loop
 
@@ -220,24 +220,24 @@ Public Class PDMTools
                                         Catch ex As Exception
                                             MsgBox(ex.Message, MsgBoxStyle.Critical, My.Application.Info.AssemblyName)
                                         Finally
-                                            MsgBox("The configuration " & newCfgName & " has been added.", MsgBoxStyle.Information, MethodInfo.GetCurrentMethod.ToString)
+                                            MsgBox("The configuration " & newCfgName & " has been added.", MsgBoxStyle.Information, MethodInfo.GetCurrentMethod.Name)
                                         End Try
                                     End If
 
                                 End If
                             Else
-                                MsgBox("The file " & swFileName & " is not open in SolidWorks.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+                                MsgBox("The file " & swFileName & " is not open in SolidWorks.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
                             End If
                         End If
                     End If
                 Else
-                    MsgBox("The file must be checked out to you in order to complete this operation", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+                    MsgBox("The file must be checked out to you in order to complete this operation", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
                 End If
             Else
-                MsgBox("This action can only be performed on parts and assemblies.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.ToString)
+                MsgBox("This action can only be performed on parts and assemblies.", MsgBoxStyle.Exclamation, MethodInfo.GetCurrentMethod.Name)
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, MethodInfo.GetCurrentMethod.ToString)
+            MsgBox(ex.Message, MsgBoxStyle.Critical, MethodInfo.GetCurrentMethod.Name)
         End Try
 
     End Sub
