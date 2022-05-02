@@ -6,19 +6,23 @@ Public Class PDMTools
     Implements IEdmAddIn5
 
     Public Sub GetAddInInfo(ByRef poInfo As EdmAddInInfo, poVault As IEdmVault5, poCmdMgr As IEdmCmdMgr5) Implements IEdmAddIn5.GetAddInInfo
-        poInfo.mbsAddInName = "TruSteel_PDMTools"
-        poInfo.mbsCompany = "Written by Lee Priest - leeclarkepriest@gmail.com"
 
-        'Specify information to display in the add-in's Properties dialog box
-        poInfo.mbsDescription = "Use 'Name of add-in' field in datacard button properties as follows:
-        1. To open PDF files - 'OpenPDF:[Variable_PDF_Path]'
-        2. To add new configuration to assy/part files - 'AddCfgPN'"
-        poInfo.mlAddInVersion = 1.1
-        poInfo.mlRequiredVersionMajor = 8
-        poInfo.mlRequiredVersionMinor = 0
+        Try
+            poInfo.mbsAddInName = "TruSteel_PDMTools"
+            poInfo.mbsCompany = "Written by Lee Priest - leeclarkepriest@gmail.com"
 
-        'Notify the add-in when a file data card button is clicked
-        poCmdMgr.AddHook(EdmCmdType.EdmCmd_CardButton)
+            'Specify information to display in the add-in's Properties dialog box
+            poInfo.mbsDescription = "Use 'Name of add-in' field in datacard button properties as follows:
+                1. To open PDF files - 'OpenPDF:[Variable_PDF_Path]'
+                2. To add new configuration to assy/part files - 'AddCfgPN'"
+            poInfo.mlAddInVersion = 1.1
+            poInfo.mlRequiredVersionMajor = 8
+            poInfo.mlRequiredVersionMinor = 0
+
+            'Notify the add-in when a file data card button is clicked
+            poCmdMgr.AddHook(EdmCmdType.EdmCmd_CardButton)
+        Catch
+        End Try
 
     End Sub
 
@@ -26,18 +30,28 @@ Public Class PDMTools
         'To trigger, the field called 'Name of add-in' associated with the PDM datacard button must be of the following format: OpenPDF:[Variable_PDF_Path]
 
         If poCmd.meCmdType = EdmCmdType.EdmCmd_CardButton Then
-            Dim eCmdData As EdmCmdData = ppoData(0) 'get the first entry of the cmd data array (should only be one entry, since triggered by button on datacard)
 
-            'get the PDF path from the datacard variable specified
-            Dim eVault As EdmVault5 = poCmd.mpoVault 'get the vault object
-            Dim eFile As IEdmFile5 = eVault.GetObject(EdmObjectType.EdmObject_File, eCmdData.mlObjectID1) 'get the file object
-            Dim eFileCard As IEdmEnumeratorVariable8 = eFile.GetEnumeratorVariable() 'get the datacard object
+            Dim eCmdData As EdmCmdData = Nothing
+            Dim eVault As EdmVault5 = Nothing
+            Dim eFile As IEdmFile5 = Nothing
+            Dim eFileCard As IEdmEnumeratorVariable8 = Nothing
 
-            If UCase(Left(poCmd.mbsComment, 8)) = "OPENPDF:" Then
-                OpenPDF(poCmd, eVault, eFile, eFileCard)
-            ElseIf UCase(Left(poCmd.mbsComment, 8)) = "ADDCFGPN" Then
-                AddConfigPN(poCmd, eVault, eFile, eFileCard)
+            Try
+                eCmdData = ppoData(0) 'get the first entry of the cmd data array (should only be one entry, since triggered by button on datacard)
+                eVault = poCmd.mpoVault 'get the vault object
+                eFile = eVault.GetObject(EdmObjectType.EdmObject_File, eCmdData.mlObjectID1) 'get the file object
+                eFileCard = eFile.GetEnumeratorVariable() 'get the datacard object
+            Catch
+            End Try
+
+            If eVault IsNot Nothing And eFile IsNot Nothing And eFileCard IsNot Nothing Then
+                If UCase(Left(poCmd.mbsComment, 8)) = "OPENPDF:" Then
+                    OpenPDF(poCmd, eVault, eFile, eFileCard)
+                ElseIf UCase(Left(poCmd.mbsComment, 8)) = "ADDCFGPN" Then
+                    AddConfigPN(poCmd, eVault, eFile, eFileCard)
+                End If
             End If
+
         End If
 
     End Sub
@@ -216,9 +230,9 @@ Public Class PDMTools
                                         End Try
 
                                         Try
-                                            swCustPropMgr.Add3("PDM_DocumentNumber", swCustomInfoType_e.swCustomInfoText, SerialNum.Value, True)
+                                            swCustPropMgr.Add3("DocumentNumber", swCustomInfoType_e.swCustomInfoText, SerialNum.Value, True)
                                         Catch ex As Exception
-                                            MsgBox(ex.Message, MsgBoxStyle.Critical, My.Application.Info.AssemblyName)
+                                            MsgBox(ex.Message, MsgBoxStyle.Critical, MethodInfo.GetCurrentMethod.Name)
                                         Finally
                                             MsgBox("The configuration " & newCfgName & " has been added.", MsgBoxStyle.Information, MethodInfo.GetCurrentMethod.Name)
                                         End Try
