@@ -1,10 +1,11 @@
 ﻿Public Class ConfigSelect
 
     Public ConfigList As ArrayList
+    Public ListIndexStart As Integer
 
     Private Sub ConfigSelect_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        For i = 1 To ConfigList.Count - 1
+        For i = ListIndexStart To ConfigList.Count - 1
             ConfigListBox.Items.Add(ConfigList.Item(i))
         Next
 

@@ -76,6 +76,7 @@ Public Class PDMTools
         ElseIf ConfigList.Count > 2 Then 'if there are more than 2 configurations, open the form to select, otherwise default to the 
             Dim ConfigSelectForm As New ConfigSelect
             ConfigSelectForm.ConfigList = ConfigList
+            ConfigSelectForm.ListIndexStart = 1
             ConfigSelectForm.InfoText.Text = "Select the configuration to open the pdf:"
             ConfigSelectForm.ShowDialog()
             SelectedConfig = ConfigSelectForm.ConfigListBox.Items(ConfigSelectForm.ConfigListBox.SelectedIndex)
@@ -177,6 +178,7 @@ Public Class PDMTools
                                 ElseIf ConfigList.Count > 1 Then 'if there is more than 1 configuration, open the form to select, otherwise default to the 
                                     Dim ConfigSelectForm As New ConfigSelect
                                     ConfigSelectForm.ConfigList = ConfigList
+                                    ConfigSelectForm.ListIndexStart = 0
                                     ConfigSelectForm.InfoText.Text = "Select the configuration to copy:"
                                     ConfigSelectForm.ShowDialog()
                                     SelectedConfig = ConfigSelectForm.ConfigListBox.Items(ConfigSelectForm.ConfigListBox.SelectedIndex)
