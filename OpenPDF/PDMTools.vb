@@ -222,12 +222,22 @@ Public Class PDMTools
                                         Dim swCustPropMgr As CustomPropertyManager = SWFile.Extension.CustomPropertyManager(newCfgName)
 
                                         Try
-                                            swCustPropMgr.Set("CAD_Manufacturer", "") 'clear CAD_Manufacturer custom property
+                                            swCustPropMgr.Set("Manufacturer", "") 'clear Manufacturer custom property
                                         Catch
                                         End Try
 
                                         Try
-                                            swCustPropMgr.Set("CAD_ManufacturerPartNumber", "")  'clear CAD_ManufacturerPartNumber custom property
+                                            swCustPropMgr.Set("ManufacturerPartNumber", "")  'clear ManufacturerPartNumber custom property
+                                        Catch
+                                        End Try
+
+                                        Try
+                                            swCustPropMgr.Set("Description", "") 'clear Manufacturer custom property
+                                        Catch
+                                        End Try
+
+                                        Try
+                                            swCustPropMgr.Delete("DocumentNumber")
                                         Catch
                                         End Try
 
